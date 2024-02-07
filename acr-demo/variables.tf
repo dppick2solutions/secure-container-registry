@@ -6,3 +6,7 @@ variable "entra_tenant_id" {
   type        = string
   description = "The Azure Tenant Id"
 }
+variable "local_ip" {
+  type        = string
+  description = "IP addresses allowed of local machine."
+}

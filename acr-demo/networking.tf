@@ -48,6 +48,19 @@ resource "azurerm_subnet" "acr_subnet" {
 }
 
 ## -------------
+## Subnet for AppGateway
+## -------------
+resource "azurerm_subnet" "ag_subnet" {
+  name                                           = "appgateway"
+  resource_group_name                            = azurerm_resource_group.acr_demo.name
+  virtual_network_name                           = azurerm_virtual_network.acr_demo.name
+  address_prefixes                               = [local.app_gateway_cidr]
+  service_endpoints                              = ["Microsoft.KeyVault"]
+  enforce_private_link_endpoint_network_policies = true
+}
+
+
+## -------------
 ## Private Endpoint to ACR
 ## -------------
 resource "azurerm_private_endpoint" "acr_private_endpoint" {
