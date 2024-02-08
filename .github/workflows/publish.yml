@@ -36,6 +36,15 @@ jobs:
           client-id: ${{ vars.ARM_CLIENT_ID }}
           tenant-id: ${{ vars.ARM_TENANT_ID }}
           subscription-id: ${{ vars.ARM_SUBSCRIPTION_ID }}
+      - name: Whitelist GitHub Runner IP
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            agentIP=$(curl -s https://api.ipify.org/)
+            az keyvault network-rule add \
+              --name pick2acrdemo \
+              --ip-address $agentIP
+            sleep 60
       - name: TFLint
         run: tflint -f compact
       - name: Terraform Init
