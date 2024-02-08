@@ -28,6 +28,11 @@ resource "azurerm_application_gateway" "gateway" {
     port = 443
   }
 
+  frontend_port {
+    name = "port-80"
+    port = 80
+  }
+
   identity {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.app_gateway.id]
@@ -57,26 +62,43 @@ resource "azurerm_application_gateway" "gateway" {
     host_names                     = ["hello-container.pick2solutions.cloud"]
   }
 
+  http_listener {
+    name                           = "http-listener"
+    frontend_ip_configuration_name = "fe-ipconfig"
+    frontend_port_name             = "port-80"
+    protocol                       = "Http"
+    host_names                     = ["hello-container.pick2solutions.cloud"]
+  }
+
   backend_address_pool {
     name         = "container_group"
     ip_addresses = [azurerm_container_group.hello_world_container.ip_address]
   }
 
   backend_http_settings {
-    name                  = "https"
+    name                  = "http"
     path                  = "/"
-    port                  = 443
-    protocol              = "Https"
+    port                  = 80
+    protocol              = "Http"
     request_timeout       = 60
     cookie_based_affinity = "Disabled"
   }
 
   request_routing_rule {
-    name                       = "forward-to-container"
-    priority                   = 1
+    name                       = "forward-to-container-https"
+    priority                   = 100
     rule_type                  = "Basic"
     http_listener_name         = "https-listener"
     backend_address_pool_name  = "container_group"
-    backend_http_settings_name = "https"
+    backend_http_settings_name = "http"
+  }
+
+  request_routing_rule {
+    name                       = "forward-to-container-http"
+    priority                   = 200
+    rule_type                  = "Basic"
+    http_listener_name         = "http-listener"
+    backend_address_pool_name  = "container_group"
+    backend_http_settings_name = "http"
   }
 }

@@ -24,10 +24,11 @@ resource "azurerm_key_vault" "certificate_vault" {
     default_action = "Deny"
     virtual_network_subnet_ids = [
       azurerm_subnet.kv_subnet.id,
+      azurerm_subnet.ag_subnet.id
     ]
     ip_rules = concat([
       var.local_ip
-    ], data.azurerm_windows_function_app.acme.outbound_ip_address_list)
+    ], data.azurerm_windows_function_app.acme.possible_outbound_ip_address_list)
   }
 }
 
