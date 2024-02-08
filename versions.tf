@@ -11,8 +11,8 @@ terraform {
 }
 
 provider "azurerm" {
-  client_id = var.terraform_sp_client_id
-  tenant_id = var.entra_tenant_id
+  client_id = var.client_id
+  tenant_id = var.tenant_id
   use_oidc  = true
   features {}
 }

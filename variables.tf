@@ -1,8 +1,8 @@
-variable "terraform_sp_client_id" {
+variable "client_id" {
   type        = string
   description = "The client id of the Entra app registration for Terraform."
 }
-variable "entra_tenant_id" {
+variable "tenant_id" {
   type        = string
   description = "The Azure Tenant Id"
 }
