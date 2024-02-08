@@ -38,11 +38,18 @@ jobs:
           subscription-id: ${{ vars.ARM_SUBSCRIPTION_ID }}
       - name: TFLint
         run: tflint -f compact
+      - name: Terraform Init
+        env:
+          ARM_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
+        run: terraform init -backend-config="config/backend.conf" 
       - name: Terraform Plan
         env:
           TF_VAR_client_id: ${{ vars.ARM_CLIENT_ID }}
           TF_VAR_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
           TF_VAR_ad_tenant_id: ${{ vars.ARM_TENANT_ID }}
+          TF_VAR_local_ip: ${{ vars.LOCAL_IP }}
         run: terraform plan -no-color
       - name: Approve Terraform Plan
         uses: trstringer/manual-approval@v1
@@ -54,5 +61,6 @@ jobs:
           TF_VAR_client_id: ${{ vars.ARM_CLIENT_ID }}
           TF_VAR_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
           TF_VAR_ad_tenant_id: ${{ vars.ARM_TENANT_ID }}
+          TF_VAR_local_ip: ${{ vars.LOCAL_IP }}
         run: terraform apply -auto-approve 
 
