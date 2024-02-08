@@ -80,6 +80,7 @@ jobs:
         run: terraform apply -auto-approve 
 
       - name: Remove GitHub Runner IP from Whitelist
+        if: always() #ensures that this gets executed even if a previous step fails.
         run: |
           agentIP=$(curl -s https://api.ipify.org/)
           az keyvault network-rule remove  --name pick2acrdemo --ip-address $agentIP
