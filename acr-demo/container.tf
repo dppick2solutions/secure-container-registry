@@ -1,3 +1,6 @@
+## -------------
+## Azure Container Instance
+## -------------
 resource "azurerm_container_group" "hello_world_container" {
   name                = "hello-world-container"
   location            = azurerm_resource_group.acr_demo.location

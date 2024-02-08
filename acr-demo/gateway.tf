@@ -1,3 +1,17 @@
+## -------------
+## Application Gateway to front Container Instance
+## -------------
+resource "azurerm_public_ip" "public_ip" {
+  name                = "ag-public-ip"
+  location            = azurerm_resource_group.acr_demo.location
+  resource_group_name = azurerm_resource_group.acr_demo.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+## -------------
+## Application Gateway to front Container Instance
+## -------------
 resource "azurerm_application_gateway" "gateway" {
   name                = "appgateway"
   resource_group_name = azurerm_resource_group.acr_demo.name
@@ -14,9 +28,19 @@ resource "azurerm_application_gateway" "gateway" {
     port = 443
   }
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.app_gateway.id]
+  }
+
   frontend_ip_configuration {
     name                 = "fe-ipconfig"
-    public_ip_address_id = azurerm_public_ip.app_gateway_public_ip.id
+    public_ip_address_id = azurerm_public_ip.public_ip.id
+  }
+
+  gateway_ip_configuration {
+    name      = "gateway-ip-configuration"
+    subnet_id = azurerm_subnet.ag_subnet.id
   }
 
   ssl_certificate {
@@ -30,27 +54,21 @@ resource "azurerm_application_gateway" "gateway" {
     frontend_port_name             = "port-443"
     protocol                       = "Https"
     ssl_certificate_name           = "app_listener"
-    host_names                     = [var.custom_hostname]
+    host_names                     = ["hello-container.pick2solutions.cloud"]
   }
 
   backend_address_pool {
     name         = "container_group"
-    ip_addresses = azurerm_container_group.hello_world_container.ip_address
+    ip_addresses = [azurerm_container_group.hello_world_container.ip_address]
   }
 
   backend_http_settings {
-    name            = "https"
-    path            = "/helo/"
-    port            = 443
-    protocol        = "Https"
-    request_timeout = 60
-  }
-
-  http_listener {
-    name                           = "https-listener"
-    frontend_ip_configuration_name = "fe-ipconfig"
-    frontend_port_name             = "port-443"
-    protocol                       = "Http"
+    name                  = "https"
+    path                  = "/"
+    port                  = 443
+    protocol              = "Https"
+    request_timeout       = 60
+    cookie_based_affinity = "Disabled"
   }
 
   request_routing_rule {
