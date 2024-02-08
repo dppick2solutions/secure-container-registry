@@ -71,6 +71,12 @@ jobs:
           secret: ${{ github.token }}
           approvers: dppick2solutions
 
+      - name: Whitelist GitHub Runner IP
+        run: |
+            agentIP=$(curl -s https://api.ipify.org/)
+            az keyvault network-rule add --name pick2acrdemo --ip-address $agentIP
+            sleep 60
+
       - name: Terraform Apply
         env:
           TF_VAR_client_id: ${{ vars.ARM_CLIENT_ID }}
