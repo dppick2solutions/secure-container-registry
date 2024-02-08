@@ -40,6 +40,7 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
+            set -eu
             agentIP=$(curl -s https://api.ipify.org/)
             az keyvault network-rule add \
               --name pick2acrdemo \
