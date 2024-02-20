@@ -28,6 +28,6 @@ resource "azurerm_container_group" "hello_world_container" {
     server                    = "pick2containerregistrydemo.eastus.data.azurecr.io"
   }
   depends_on = [
-    azurerm_role_assignment.acr_pull
+    azurerm_role_assignment.tf_keyvault_admin
   ]
 }
