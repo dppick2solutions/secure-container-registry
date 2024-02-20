@@ -2,9 +2,13 @@ name: 'Run Terraform'
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+    inputs:
+      whitelist_vault:
+        description: 'Whitelist IP to KeyVault.'
+        required: true
+        default: false
+        type: boolean
+
 permissions: write-all
 jobs:
   terraform:
@@ -42,6 +46,8 @@ jobs:
           subscription-id: ${{ vars.ARM_SUBSCRIPTION_ID }}
 
       - name: Whitelist GitHub Runner IP
+        id: whitelist
+        if: ${{ github.events.inputs.whitelist_vault }}
         run: |
             agentIP=$(curl -s https://api.ipify.org/)
             az keyvault network-rule add --name pick2acrdemo --ip-address $agentIP
@@ -86,7 +92,7 @@ jobs:
         run: terraform apply -auto-approve 
 
       - name: Remove GitHub Runner IP from Whitelist
-        if: always() #ensures that this gets executed even if a previous step fails.
+        if: steps.whitelist.conclusion == 'success'
         run: |
           agentIP=$(curl -s https://api.ipify.org/)
           az keyvault network-rule remove  --name pick2acrdemo --ip-address $agentIP
