@@ -27,4 +27,7 @@ resource "azurerm_container_group" "hello_world_container" {
     user_assigned_identity_id = azurerm_user_assigned_identity.container.id
     server                    = "pick2containerregistrydemo.eastus.data.azurecr.io"
   }
+  depends_on = [
+    azurerm_role_assignment.acr_pull
+  ]
 }

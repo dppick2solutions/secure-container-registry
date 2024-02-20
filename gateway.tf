@@ -101,4 +101,7 @@ resource "azurerm_application_gateway" "gateway" {
     backend_address_pool_name  = "container_group"
     backend_http_settings_name = "http"
   }
+  depends_on = [
+    azurerm_role_assignment.kv_certs
+  ]
 }
