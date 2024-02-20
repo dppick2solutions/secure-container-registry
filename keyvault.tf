@@ -30,6 +30,11 @@ resource "azurerm_key_vault" "certificate_vault" {
       var.local_ip
     ], data.azurerm_windows_function_app.acme.possible_outbound_ip_address_list)
   }
+  lifecycle {
+    ignore_changes = [
+      network_acls[0].ip_rules
+    ]
+  }
 }
 
 ## -------------
