@@ -38,6 +38,6 @@ resource "azurerm_role_assignment" "kv_certs" {
 resource "azurerm_role_assignment" "tf_keyvault_admin" {
   scope                = azurerm_key_vault.certificate_vault.id
   role_definition_name = "Key Vault Administrator"
-  principal_id         = data.azurerm_client_config.current.principal_id
+  principal_id         = data.azurerm_client_config.current.client_id
 }
 data "azurerm_client_config" "current" {}
